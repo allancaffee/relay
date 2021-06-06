@@ -30,17 +30,17 @@ And it's not always easy to understand the mechanics of all processes that are h
 
 Fortunately, there are tools that aim to simplify the process of writing tests for Relay components, by providing imperative APIs for controlling the request/response flow and additional API for mock data generation.
 
-There are two main modules that you may using in your tests:
+There are two main modules that you may use in your tests:
 
 * `createMockEnvironment(options): RelayMockEnvironment`
 * `MockPayloadGenerator` and the `@relay_test_operation` directive
 
 
-With `createMockEnvironment,` you will be able to create an instance of `RelayMockEnvironment`, a Relay environment specifically for your tests. The instance created by `createMockEnvironment` is implementing the Relay Environment Interface and it also has an additional Mock layer, with methods that allow to resolve/reject and control the flow of operations (queries/mutations/subscriptions).
+With `createMockEnvironment,` you will be able to create an instance of `RelayMockEnvironment`, a Relay environment specifically for your tests. The instance created by `createMockEnvironment` implements the Relay Environment Interface and it also has an additional Mock layer, with methods that allow you to resolve/reject and control the flow of operations (queries/mutations/subscriptions).
 
 The main purpose of `MockPayloadGenerator` is to improve the process of creating and maintaining the mock data for tested components.
 
-One of the patterns you may see in the tests for Relay components: 95% of the test code is the test preparation: the gigantic mock object with dummy data, manually created, or just a copy of a sample server response that needs to be passed as the network response. And rest 5% is actual test. As a result, people don't test much. It's hard to create and manage all these dummy payloads for different cases. Hence, writing tests are time-consuming and painful to maintain.
+One pattern you may see in the tests for Relay components: 95% of the test code is the test preparation: the gigantic mock object with dummy data, manually created, or just a copy of a sample server response that needs to be passed as the network response. And rest 5% is actual test. As a result, people don't test much. It's hard to create and manage all these dummy payloads for different cases. Hence, writing tests are time-consuming and painful to maintain.
 
 With the `MockPayloadGenerator` and `@relay_test_operation`, we want to get rid of this pattern and switch the developer's focus from the preparation of the test to the actual testing.
 
@@ -72,9 +72,9 @@ RelayMockEnvironment is a special version of Relay Environment with additional A
 
 ## Mock Payload Generator and the `@relay_test_operation` Directive
 
-MockPayloadGenerator may drastically simplify the process of creating and maintaining mock data for your tests. MockPayloadGenerator is the module that can generate dummy data for the selection that you have in your operation. There is an API to modify the generated data - Mock Resolvers. With Mock Resolvers, you may adjust the data for your needs. Collection of Mock Resolvers it's an object where **keys are names of GraphQL types (ID, String, User, Feedback, Comment, etc),** and values are functions which will return the default data for the type.
+`MockPayloadGenerator` may drastically simplify the process of creating and maintaining mock data for your tests. The `MockPayloadGenerator` module can generate dummy data for the selection that you use in your operation. There is an API to modify the generated data - Mock Resolvers. With Mock Resolvers, you may adjust the data for your needs. A collection of Mock Resolvers is an object where **the keys are names of GraphQL types (ID, String, User, Feedback, Comment, etc),** and the values are functions which will return the default data for the type.
 
-Example of a simple Mock Resolver:
+Here's an example of a simple Mock Resolver:
 
 ```js
 {
@@ -90,11 +90,11 @@ Example of a simple Mock Resolver:
 ```
 
 
-It is possible to define more resolvers for Object types
+It is possible to define more resolvers for Object types.
 
 ```js
 {
-  // This will be the default values for User object in the query response
+  // This provides the default values for User object in the query response
   User() {
     return {
       id: 4,
@@ -132,7 +132,7 @@ The first argument of the MockResolver is the object that contains Mock Resolver
 
 ### ID Generation
 
-The second argument of the Mock Resolver its a function that will generate a sequence of integers, useful to generate unique ids in the tests
+The second argument of the Mock Resolver is a function that will generate a sequence of integers. This is useful for generating unique ids in tests.
 
 ```js
 {
@@ -149,9 +149,9 @@ Please note, that for production queries we don't have full type information for
 
 ### @relay_test_operation
 
-Most of GraphQL type information for a specific field in the selection is not available during Relay runtime. By default, Relay, cannot get type information for a scalar field in the selection, or an interface type of the object.
+Most of the time GraphQL type information for a specific field in the selection is not available during Relay runtime. By default, Relay, cannot get type information for a scalar field in the selection, or an interface type of the object.
 
-Operation with the @relay_test_operation directive will have additional metadata that will contain GraphQL type info for fields in the operation's selection. And it will improve the quality of the generated data. You also will be able to define Mock resolvers for Scalar (not only ID and String) and Abstract types:
+Operation with the `@relay_test_operation` directive will have additional metadata that will contain GraphQL type info for fields in the operation's selection. And it will improve the quality of the generated data. You will also be able to define Mock resolvers for Scalar (not only ID and String) and Abstract types:
 
 ```javascript
 {
@@ -177,7 +177,7 @@ Operation with the @relay_test_operation directive will have additional metadata
 
 ### Relay Component Test
 
-Using `createMockEnvironment` and `MockPayloadGenerator` allows writing concise tests for components that are using Relay hooks. Both those modules can be imported from `relay-test-utils`
+Using `createMockEnvironment` and `MockPayloadGenerator` allow you to write concise tests for components that use Relay hooks. Both those modules can be imported from `relay-test-utils`.
 
 
 ```javascript
@@ -247,7 +247,7 @@ test('Error State', () => {
 
 ### Fragment Component Tests
 
-Essentially, in the example above will `resolveMostRecentOperation` will generate data for all child fragment containers (pagination, refetch). But, usually the root component may have many child fragment components and you may want to exercise a specific component that uses `useFragment`. The solution for that would be to wrap your fragment container with the `useLazyLoadQuery` component that renders a Query that's spreads fragments from your fragment component:
+Essentially, in the example above `resolveMostRecentOperation` will generate data for all child fragment containers (pagination, refetch). But, usually the root component may have many child fragment components and you may want to exercise a specific component that uses `useFragment`. The solution for that would be to wrap your fragment container with the `useLazyLoadQuery` component that renders a Query that spreads fragments from your component:
 
 ```javascript
 test('Fragment', () => {
